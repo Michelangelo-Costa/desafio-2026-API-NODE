@@ -1,79 +1,120 @@
-🧠 Desafio Técnico – Backend (Node.js API)
-==========================================
+# 🧠 Desafio Técnico – Backend (Node.js API)
 
-### 🎯 Objetivo
+## 🎯 Objetivo
 
-* Construir uma API para gerenciamento e análise de dados de espécies (simulando o contexto da SIAPESQ).
-* Periodo para executar: Dia 27 de abril até 7 de maio
+Desenvolver uma API REST para gerenciamento e análise de dados de espécies, simulando um cenário real de aplicações da SIAPESQ.
 
-📌 Descrição do desafio
------------------------
+- **Período para execução:** 27 de abril até 7 de maio
 
-Você deve desenvolver uma API REST em **Node.js (preferencialmente com TypeScript)** que permita:
+---
 
-### 🔹 1. Cadastro de espécies
+## 🧠 Requisitos
+
+### 🔹 Tecnologias
+
+- Node.js  
+- JavaScript ou TypeScript (preferencialmente TypeScript)  
+- Banco de dados SQL (PostgreSQL/MySQL) ou NoSQL (MongoDB)  
+
+---
+
+## 📌 Descrição do Desafio
+
+Você deve desenvolver uma API REST que contemple as seguintes funcionalidades:
+
+---
+
+### 🔹 1. Cadastro de Espécies
 
 Cada espécie deve conter:
 
-*   Nome comum
-*   Nome científico
-*   Categoria (ex: ave, peixe, planta)
-*   Localização (latitude/longitude)
-*   Data de registro
-    
-### 🔹 2. Consulta de dados
+- Nome comum  
+- Nome científico  
+- Categoria (ex: ave, peixe, planta)  
+- Localização (latitude e longitude)  
+- Data de registro  
+
+---
+
+### 🔹 2. Consulta de Dados
 
 Criar endpoints para:
 
-*   Listar todas as espécies
-*   Filtrar por categoria
-*   Buscar por nome
-*   Retornar estatísticas (ex: quantidade por categoria)
+- Listar todas as espécies  
+- Filtrar por categoria  
+- Buscar por nome  
+- Retornar estatísticas (ex: quantidade por categoria)  
 
-### 🔹 3. Integração com API externa
+---
 
-Consumir uma API pública (ex: clima ou localização) e:
+### 🔹 3. Integração com API Externa
 
-*   Associar dados externos ao registro da espécie
-    
+Consumir uma API pública (ex: clima, geolocalização, etc.) e:
+
+- Associar dados externos ao registro da espécie  
+
+---
+
 ### 🔹 4. Autenticação
 
-Implementar autenticação com:
+Implementar autenticação utilizando:
 
-*   JWT
-*   Login simples (email + senha)
-    
-### 🔹 5. Banco de dados
+- JWT  
+- Login simples (email e senha)  
 
-Usar:
+---
 
-*   SQL (PostgreSQL/MySQL) **ou**
-*   NoSQL (MongoDB)
+### 🔹 5. Banco de Dados
 
-### 🔹 6. Testes (diferencial)
+Utilizar uma das opções:
 
-*   Testes unitários ou de integração
+- SQL (PostgreSQL ou MySQL)  
+- NoSQL (MongoDB)  
 
-📦 Entregáveis
---------------
+---
 
-*   Código no GitHub
-*   README com instruções
-*   Collection do Postman ou Insomnia (Opcional)
-    
+### 🔹 6. Testes (Diferencial)
 
-🧪 Critérios de avaliação
--------------------------
+- Testes unitários ou de integração  
 
-* Critério	                     Peso
-* Arquitetura e organização	     25%
-* Funcionalidades implementadas	 20%
-* Boas práticas (clean code)	 15%
-* Segurança (validação + auth)	 15%
-* Uso correto de HTTP	         10%
-* Integração com API externa	 10%
-* Testes (diferencial)	         5%
+---
 
-👤 Em caso de dúvidas entre em contato com:
-- Theodor:  55 53 991469520 (Whatsapp)
-- Email: siapesq@gmail.com
+## 📦 Entregáveis
+
+- Código no GitHub  
+- README com instruções de execução  
+- Collection do Postman ou Insomnia (opcional)  
+
+---
+
+## 🧪 Critérios de Avaliação
+
+| Critério                         | Peso |
+|--------------------------------|------|
+| Arquitetura e organização       | 25% |
+| Funcionalidades implementadas   | 20% |
+| Boas práticas (clean code)      | 15% |
+| Segurança (validação + auth)    | 15% |
+| Uso correto de HTTP             | 10% |
+| Integração com API externa      | 10% |
+| Testes (diferencial)            | 5%  |
+
+---
+
+## ⚠️ Observações
+
+- O desafio **não precisa estar 100% completo** para ser avaliado  
+- O foco principal será:
+  - Organização do código  
+  - Raciocínio técnico  
+  - Boas práticas  
+- Diferenciais são opcionais, mas valorizados  
+
+---
+
+## 👤 Contato
+
+Em caso de dúvidas, entre em contato:
+
+- **Theodor:** (55) 53 99146-9520 (WhatsApp)  
+- **Email:** siapesq@gmail.com  
