@@ -64,11 +64,14 @@ Usar:
 🧪 Critérios de avaliação
 -------------------------
 
-*   Organização do código (arquitetura)
-*   Uso correto de HTTP (status codes)
-*   Segurança (validação, auth)
-*   Clareza dos endpoints
-*   Boas práticas (clean code)
+* Critério	                     Peso
+* Arquitetura e organização	     25%
+* Funcionalidades implementadas	 20%
+* Boas práticas (clean code)	 15%
+* Segurança (validação + auth)	 15%
+* Uso correto de HTTP	         10%
+* Integração com API externa	 10%
+* Testes (diferencial)	         5%
 
 👤 Em caso de dúvidas entre em contato com:
 - Theodor:  55 53 991469520 (Whatsapp)
