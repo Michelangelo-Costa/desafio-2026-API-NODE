@@ -1,0 +1,65 @@
+import express from "express";
+import cors from "cors";
+import { getAbsoluteFSPath } from "swagger-ui-dist";
+import { swaggerSpec } from "./utils/swagger";
+import authRoutes from "./routes/auth.routes";
+import speciesRoutes from "./routes/species.routes";
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+// Swagger — spec JSON
+app.get("/docs.json", (_req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec);
+});
+
+// Swagger — custom HTML (must come before the static middleware)
+app.get("/docs", (_req, res) => {
+  res.setHeader("Content-Type", "text/html");
+  res.send(`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>SIAPESQ API — Swagger UI</title>
+  <link rel="stylesheet" href="/docs/swagger-ui.css" />
+  <style>body { margin: 0; }</style>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="/docs/swagger-ui-bundle.js"></script>
+  <script src="/docs/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = () => {
+      SwaggerUIBundle({
+        url: "/docs.json",
+        dom_id: "#swagger-ui",
+        presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+        layout: "StandaloneLayout",
+        persistAuthorization: true,
+        defaultModelsExpandDepth: 1,
+        docExpansion: "list",
+      });
+    };
+  </script>
+</body>
+</html>`);
+});
+
+// Swagger — assets (CSS, JS) from swagger-ui-dist
+app.use("/docs", express.static(getAbsoluteFSPath()));
+
+app.use("/auth", authRoutes);
+app.use("/species", speciesRoutes);
+
+app.use((_req, res) => {
+  res.status(404).json({ error: "Rota não encontrada" });
+});
+
+export default app;
