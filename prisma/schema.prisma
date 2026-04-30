@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Category {
+  Bird
+  Fish
+  Plant
+  Mammal
+  Reptile
+  Other
+}
+
+enum Status {
+  Active
+  Inactive
+  Endangered
+  Extinct
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Species {
+  id               String    @id @default(cuid())
+  commonName       String
+  scientificName   String
+  category         Category
+  latitude         Float?
+  longitude        Float?
+  location         String?
+  observationDate  DateTime?
+  notes            String?
+  status           Status    @default(Active)
+  abundance        Int       @default(1)
+  uniqueIdentifier String    @unique @default(cuid())
+  weatherData      Json?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@map("species")
+}
