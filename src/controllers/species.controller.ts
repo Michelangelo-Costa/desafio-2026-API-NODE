@@ -6,6 +6,15 @@ import { AuthRequest } from "../middlewares/auth.middleware";
 
 const VALID_CATEGORIES = Object.values(Category);
 const VALID_STATUSES = Object.values(Status);
+const SPECIES_AUTHOR_INCLUDE = {
+  createdBy: {
+    select: {
+      id: true,
+      email: true,
+      name: true,
+    },
+  },
+} satisfies Prisma.SpeciesInclude;
 
 function getQueryString(value: unknown, fallback: string): string {
   if (typeof value === "string") return value;
@@ -40,6 +49,7 @@ export async function listSpecies(req: AuthRequest, res: Response): Promise<void
     prisma.species.count({ where }),
     prisma.species.findMany({
       where,
+      include: SPECIES_AUTHOR_INCLUDE,
       skip,
       take: size,
       orderBy: { createdAt: "desc" },
@@ -140,7 +150,10 @@ export async function getSpeciesStats(_req: AuthRequest, res: Response): Promise
 
 export async function getSpeciesById(req: AuthRequest, res: Response): Promise<void> {
   const id = req.params["id"] as string;
-  const species = await prisma.species.findUnique({ where: { id } });
+  const species = await prisma.species.findUnique({
+    where: { id },
+    include: SPECIES_AUTHOR_INCLUDE,
+  });
 
   if (!species) {
     res.status(404).json({ error: "Espécie não encontrada" });
@@ -151,6 +164,11 @@ export async function getSpeciesById(req: AuthRequest, res: Response): Promise<v
 }
 
 export async function createSpecies(req: AuthRequest, res: Response): Promise<void> {
+  if (!req.user) {
+    res.status(401).json({ error: "Nao autorizado" });
+    return;
+  }
+
   const {
     commonName,
     scientificName,
@@ -199,7 +217,9 @@ export async function createSpecies(req: AuthRequest, res: Response): Promise<vo
       status: (status as Status) ?? Status.Active,
       abundance: abundanceNum,
       weatherData: weatherData ?? undefined,
+      createdById: req.user.id,
     },
+    include: SPECIES_AUTHOR_INCLUDE,
   });
 
   res.status(201).json(species);
@@ -223,6 +243,11 @@ export async function updateSpecies(req: AuthRequest, res: Response): Promise<vo
   const existing = await prisma.species.findUnique({ where: { id } });
   if (!existing) {
     res.status(404).json({ error: "Espécie não encontrada" });
+    return;
+  }
+
+  if (existing.createdById && existing.createdById !== req.user?.id) {
+    res.status(403).json({ error: "Voce nao tem permissao para alterar esta especie" });
     return;
   }
 
@@ -264,6 +289,7 @@ export async function updateSpecies(req: AuthRequest, res: Response): Promise<vo
       abundance: abundance != null ? Math.min(10, Math.max(1, Number(abundance))) : existing.abundance,
       weatherData: weatherData ?? undefined,
     },
+    include: SPECIES_AUTHOR_INCLUDE,
   });
 
   res.json(updated);
@@ -275,6 +301,11 @@ export async function deleteSpecies(req: AuthRequest, res: Response): Promise<vo
   const existing = await prisma.species.findUnique({ where: { id } });
   if (!existing) {
     res.status(404).json({ error: "Espécie não encontrada" });
+    return;
+  }
+
+  if (existing.createdById && existing.createdById !== req.user?.id) {
+    res.status(403).json({ error: "Voce nao tem permissao para remover esta especie" });
     return;
   }
 

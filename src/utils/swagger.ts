@@ -63,6 +63,16 @@ const options: swaggerJsdoc.Options = {
             },
             abundance: { type: "integer", minimum: 1, maximum: 10, example: 3 },
             uniqueIdentifier: { type: "string" },
+            createdById: { type: "string", nullable: true },
+            createdBy: {
+              type: "object",
+              nullable: true,
+              properties: {
+                id: { type: "string" },
+                email: { type: "string" },
+                name: { type: "string", nullable: true },
+              },
+            },
             weatherData: {
               type: "object",
               nullable: true,
