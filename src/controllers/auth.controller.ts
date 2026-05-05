@@ -11,6 +11,7 @@ const PASSWORD_UPDATED_MESSAGE = "Senha atualizada com sucesso.";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 8;
 const RESET_TOKEN_EXPIRATION_MS = 60 * 60 * 1000;
+const DEFAULT_JWT_EXPIRES_IN = "7d";
 
 function isValidEmail(email: unknown): email is string {
   return typeof email === "string" && EMAIL_REGEX.test(email.trim());
@@ -24,13 +25,23 @@ function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
+function getJwtExpiresIn(): SignOptions["expiresIn"] {
+  const value = process.env.JWT_EXPIRES_IN?.trim().replace(/^["']|["']$/g, "");
+
+  if (!value || value === "0" || value === "0s" || value === "0m" || value === "0h" || value === "0d") {
+    return DEFAULT_JWT_EXPIRES_IN;
+  }
+
+  return value as SignOptions["expiresIn"];
+}
+
 function signToken(user: { id: string; email: string; name: string | null }): string {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
     throw new Error("JWT_SECRET is not configured.");
   }
 
-  const expiresIn = (process.env.JWT_EXPIRES_IN ?? "7d") as SignOptions["expiresIn"];
+  const expiresIn = getJwtExpiresIn();
   return jwt.sign(
     {
       id: user.id,

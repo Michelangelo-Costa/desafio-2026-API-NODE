@@ -24,19 +24,23 @@ export function authMiddleware(
   const authHeader = req.headers.authorization;
 
   if (!authHeader?.startsWith("Bearer ")) {
-    res.status(401).json({ error: "Token de autenticação não fornecido" });
+    res.status(401).json({ error: "Token de autenticacao nao fornecido" });
     return;
   }
 
   const token = authHeader.slice(7);
 
   try {
-    const secret = process.env.JWT_SECRET!;
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error("JWT_SECRET is not configured.");
+    }
+
     const payload = jwt.verify(token, secret) as JwtPayload;
     const id = payload.id ?? payload.userId;
 
     if (!id) {
-      res.status(401).json({ error: "Token invÃ¡lido ou expirado" });
+      res.status(401).json({ error: "Token invalido ou expirado" });
       return;
     }
 
@@ -46,7 +50,13 @@ export function authMiddleware(
       name: payload.name ?? null,
     };
     next();
-  } catch {
-    res.status(401).json({ error: "Token inválido ou expirado" });
+  } catch (error) {
+    if (process.env.AUTH_DEBUG === "true") {
+      const errorName = error instanceof Error ? error.name : "UnknownError";
+      const hasSecret = Boolean(process.env.JWT_SECRET);
+      console.warn(`Auth failed: ${errorName}. tokenPresent=true jwtSecretPresent=${hasSecret}`);
+    }
+
+    res.status(401).json({ error: "Token invalido ou expirado" });
   }
 }
