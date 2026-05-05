@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { Category, Status } from "@prisma/client";
+import { Category, Prisma, Status } from "@prisma/client";
 import { prisma } from "../utils/prisma";
 import { fetchWeather } from "../services/weather.service";
 import { AuthRequest } from "../middlewares/auth.middleware";
@@ -7,14 +7,23 @@ import { AuthRequest } from "../middlewares/auth.middleware";
 const VALID_CATEGORIES = Object.values(Category);
 const VALID_STATUSES = Object.values(Status);
 
+function getQueryString(value: unknown, fallback: string): string {
+  if (typeof value === "string") return value;
+  if (Array.isArray(value) && typeof value[0] === "string") return value[0];
+  return fallback;
+}
+
 export async function listSpecies(req: AuthRequest, res: Response): Promise<void> {
-  const { search, category, page = "1", pageSize = "10" } = req.query as Record<string, string>;
+  const search = getQueryString(req.query.search, "");
+  const category = getQueryString(req.query.category, "");
+  const page = getQueryString(req.query.page, "1");
+  const pageSize = getQueryString(req.query.pageSize, "10");
 
   const pageNum = Math.max(1, parseInt(page, 10) || 1);
   const size = Math.min(100, Math.max(1, parseInt(pageSize, 10) || 10));
   const skip = (pageNum - 1) * size;
 
-  const where: Record<string, unknown> = {};
+  const where: Prisma.SpeciesWhereInput = {};
 
   if (category && VALID_CATEGORIES.includes(category as Category)) {
     where.category = category as Category;
@@ -37,13 +46,19 @@ export async function listSpecies(req: AuthRequest, res: Response): Promise<void
     }),
   ]);
 
+  const totalPages = Math.ceil(total / size);
+
   res.json({
     data: items,
+    total,
+    page: pageNum,
+    pageSize: size,
+    totalPages,
     pagination: {
       total,
       page: pageNum,
       pageSize: size,
-      totalPages: Math.ceil(total / size),
+      totalPages,
     },
   });
 }
@@ -65,7 +80,6 @@ export async function getSpeciesStats(_req: AuthRequest, res: Response): Promise
     }),
   ]);
 
-  // byCategory as flat object: { Bird: N, Fish: N, ... }
   const byCategory = Object.fromEntries(
     VALID_CATEGORIES.map((cat) => [
       cat,
@@ -75,7 +89,6 @@ export async function getSpeciesStats(_req: AuthRequest, res: Response): Promise
 
   const total = Object.values(byCategory).reduce((a, b) => a + b, 0);
 
-  // quarterlyData grouped by observationDate quarter
   const quarters: Record<string, { birds: number; fish: number; plants: number; mammals: number }> = {
     Q1: { birds: 0, fish: 0, plants: 0, mammals: 0 },
     Q2: { birds: 0, fish: 0, plants: 0, mammals: 0 },
@@ -103,12 +116,10 @@ export async function getSpeciesStats(_req: AuthRequest, res: Response): Promise
     ...counts,
   }));
 
-  // byStatus
   const byStatus = Object.fromEntries(
     statusGroups.map((g) => [g.status ?? "Desconhecido", g._count])
   );
 
-  // byMonth (registros por mês de observação)
   const monthMap: Record<string, number> = {};
   allDates.forEach(({ observationDate }) => {
     if (!observationDate) return;
@@ -120,7 +131,6 @@ export async function getSpeciesStats(_req: AuthRequest, res: Response): Promise
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([month, count]) => ({ month, count }));
 
-  // topLocations
   const topLocations = locGroups
     .filter((g) => g.location)
     .map((g) => ({ location: g.location!, count: g._count }));

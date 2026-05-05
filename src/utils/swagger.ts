@@ -61,6 +61,7 @@ const options: swaggerJsdoc.Options = {
               type: "string",
               enum: ["Active", "Inactive", "Endangered", "Extinct"],
             },
+            abundance: { type: "integer", minimum: 1, maximum: 10, example: 3 },
             uniqueIdentifier: { type: "string" },
             weatherData: {
               type: "object",
@@ -103,6 +104,7 @@ const options: swaggerJsdoc.Options = {
               enum: ["Active", "Inactive", "Endangered", "Extinct"],
               default: "Active",
             },
+            abundance: { type: "integer", minimum: 1, maximum: 10, example: 3 },
           },
         },
         PaginatedSpecies: {
@@ -112,6 +114,10 @@ const options: swaggerJsdoc.Options = {
               type: "array",
               items: { $ref: "#/components/schemas/Species" },
             },
+            total: { type: "integer", example: 42 },
+            page: { type: "integer", example: 1 },
+            pageSize: { type: "integer", example: 10 },
+            totalPages: { type: "integer", example: 5 },
             pagination: {
               type: "object",
               properties: {
@@ -128,11 +134,43 @@ const options: swaggerJsdoc.Options = {
           properties: {
             total: { type: "integer", example: 10 },
             byCategory: {
+              type: "object",
+              additionalProperties: { type: "integer" },
+              example: { Bird: 4, Fish: 2, Plant: 1, Mammal: 3, Reptile: 0, Other: 0 },
+            },
+            quarterlyData: {
               type: "array",
               items: {
                 type: "object",
                 properties: {
-                  category: { type: "string" },
+                  quarter: { type: "string", example: "Q1" },
+                  birds: { type: "integer" },
+                  fish: { type: "integer" },
+                  plants: { type: "integer" },
+                  mammals: { type: "integer" },
+                },
+              },
+            },
+            byStatus: {
+              type: "object",
+              additionalProperties: { type: "integer" },
+            },
+            byMonth: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  month: { type: "string", example: "2026-04" },
+                  count: { type: "integer" },
+                },
+              },
+            },
+            topLocations: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  location: { type: "string" },
                   count: { type: "integer" },
                 },
               },

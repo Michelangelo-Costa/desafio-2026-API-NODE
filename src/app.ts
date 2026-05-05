@@ -14,13 +14,11 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// Swagger — spec JSON
 app.get("/docs.json", (_req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.send(swaggerSpec);
 });
 
-// Swagger — custom HTML (must come before the static middleware)
 app.get("/docs", (_req, res) => {
   res.setHeader("Content-Type", "text/html");
   res.send(`<!DOCTYPE html>
@@ -52,7 +50,6 @@ app.get("/docs", (_req, res) => {
 </html>`);
 });
 
-// Swagger — assets (CSS, JS) from swagger-ui-dist
 app.use("/docs", express.static(getAbsoluteFSPath()));
 
 app.use("/auth", authRoutes);

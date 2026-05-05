@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: arca-api
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run render:build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
