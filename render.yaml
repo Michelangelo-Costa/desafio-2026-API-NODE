@@ -3,7 +3,7 @@ services:
     name: arca-api
     runtime: node
     plan: free
-    buildCommand: npm install && npm run render:build
+    buildCommand: npm install --include=dev && npm run render:build
     startCommand: npm start
     healthCheckPath: /health
     envVars:
