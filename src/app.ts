@@ -7,9 +7,42 @@ import speciesRoutes from "./routes/species.routes";
 
 const app = express();
 
+const allowedOrigins = (process.env.CORS_ORIGIN ?? "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const isLocalhostOrigin = (origin: string) =>
+  /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN ?? true,
+    origin(origin, callback) {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      if (origin === "null" && allowedOrigins.includes("null")) {
+        return callback(null, true);
+      }
+
+      if (
+        allowedOrigins.length === 0 &&
+        process.env.NODE_ENV !== "production" &&
+        isLocalhostOrigin(origin)
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`Origin ${origin} not allowed by CORS`));
+    },
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   })
 );
 app.use(express.json());
