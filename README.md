@@ -27,6 +27,7 @@ Principais recursos:
 - CRUD de especies com busca, filtro, paginacao e estatisticas.
 - Controle de autoria para edicao e exclusao de registros.
 - Integracao externa com Open-Meteo para associar dados climaticos por coordenadas.
+- Seed idempotente com usuario demo e 36 especies para popular dashboard, mapa, filtros e graficos.
 - Swagger UI em `/docs` e especificacao JSON em `/docs.json`.
 - Health check em `/health`.
 
@@ -99,6 +100,12 @@ Aplique as migrations em desenvolvimento:
 npm run db:migrate
 ```
 
+Popule o banco com dados iniciais:
+
+```bash
+npm run db:seed
+```
+
 Inicie a API:
 
 ```bash
@@ -106,6 +113,25 @@ npm run dev
 ```
 
 A API fica disponivel em `http://localhost:3000`.
+
+## Seed do banco
+
+O seed cria ou atualiza o usuario demo:
+
+- Email: `demo@arca.com`
+- Senha: `12345678`
+
+Tambem insere 36 especies de exemplo, distribuidas entre as categorias `Bird`, `Fish`, `Plant`, `Mammal`, `Reptile` e `Other`, com status `Active`, `Inactive`, `Endangered` e `Extinct`.
+
+Os registros incluem `commonName`, `scientificName`, `category`, `status`, `latitude`, `longitude`, `location`, `observationDate`, `abundance`, `notes` e `createdById` apontando para o usuario demo.
+
+O seed e idempotente: cada especie usa um `uniqueIdentifier` fixo, entao o comando pode ser executado varias vezes sem duplicar registros.
+
+Tambem e possivel rodar pelo Prisma:
+
+```bash
+npx prisma db seed
+```
 
 ## Scripts
 
@@ -118,6 +144,7 @@ npm run db:generate  # gera Prisma Client
 npm run db:migrate   # executa migrations em desenvolvimento
 npm run db:push      # sincroniza schema sem migration
 npm run db:studio    # abre Prisma Studio
+npm run db:seed      # popula o banco com dados demo
 ```
 
 ## Endpoints principais
@@ -164,3 +191,4 @@ Em producao, configure `CORS_ORIGIN` na API com a origem do front publicado e aj
 - A documentacao Swagger fica em `/docs` quando a API esta rodando.
 - A integracao externa usa a API publica Open-Meteo quando latitude e longitude sao enviadas.
 - Em desenvolvimento, se `RESEND_API_KEY` nao estiver configurada, o link de reset de senha e exibido no console.
+- Para a entrega, rode `npm run db:seed` antes de abrir o frontend para visualizar dashboard, mapa, listagem, filtros, graficos e exportacao com dados de exemplo.
